@@ -29,8 +29,9 @@ CREATE TABLE mentees(
 CREATE TABLE mentors ( 
     id INT NOT NULL AUTO_INCREMENT, 
     full_name VARCHAR(225) not null, 
-    linkedin_url VARCHAR(225),
-    linkedin_profile_data JSON,
+    email VARCHAR(40) not null,
+    password VARCHAR(225) not null,
+    questionnaire_responses JSON,
     PRIMARY KEY (id)
     );
 

@@ -7,6 +7,7 @@ var logger = require("morgan");
 var indexRouter = require("./routes/index");
 var menteesRouter = require("./routes/mentees");
 var mentorsRouter = require("./routes/mentors");
+var matchRouter = require("./routes/match");
 
 var app = express();
 
@@ -20,5 +21,6 @@ app.use(cookieParser());
 app.use("/", indexRouter);
 app.use("/api/mentees", menteesRouter);
 app.use("/api/mentors", mentorsRouter);
+app.use("/api/generate-matches", matchRouter);
 
 module.exports = app;
