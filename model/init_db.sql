@@ -15,13 +15,9 @@ SET foreign_key_checks = 1;
 
 CREATE TABLE mentees(
     id INT NOT NULL AUTO_INCREMENT, 
-    is_current_student BOOLEAN not null,
     full_name VARCHAR(225) not null, 
     email VARCHAR(40) not null, 
-    password VARCHAR(225) not null,
-    profile_pic VARCHAR(225) not null,
     questionnaire_responses JSON,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
     );
 
@@ -30,7 +26,6 @@ CREATE TABLE mentors (
     id INT NOT NULL AUTO_INCREMENT, 
     full_name VARCHAR(225) not null, 
     email VARCHAR(40) not null,
-    password VARCHAR(225) not null,
     questionnaire_responses JSON,
     PRIMARY KEY (id)
     );

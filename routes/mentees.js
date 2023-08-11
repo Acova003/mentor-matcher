@@ -20,11 +20,10 @@ router.get("/", function (req, res, next) {
   getAllMentees(req, res);
 });
 
-/* POST add one mentee */
 router.post("/", async function (req, res, next) {
   try {
     const results = await db(
-      `INSERT INTO mentees (is_current_student, full_name, email, password, profile_pic) VALUES (${req.body.is_current_student}, "${req.body.full_name}", "${req.body.email}", "${req.body.password}", "${req.body.profile_pic}");`
+      `INSERT INTO mentees (full_name, email, questionnaire_responses) VALUES (1, "${req.body.full_name}", "${req.body.email}", "${req.body.questionnaire_responses}");`
     );
     res.send(results.data);
   } catch (err) {
@@ -50,12 +49,11 @@ router.get("/:id", async function (req, res, next) {
 /* PUT Update mentee by id */
 router.put("/:id", async function (req, res, next) {
   const id = req.params.id;
-  const { is_current_student, full_name, email, password, profile_pic } =
-    req.body;
+  const { full_name, email, questionnaire_responses } = req.body;
 
   try {
     const results = await db(
-      `UPDATE mentees SET is_current_student = ${is_current_student}, full_name = "${full_name}", email = "${email}", password = "${password}", profile_pic = "${profile_pic}" WHERE id = ${id};`
+      `UPDATE mentees SET full_name = "${full_name}", email = "${email}", questionnaire_responses = "${questionnaire_responses}" WHERE id = ${id};`
     );
     res.send(results.data);
   } catch (err) {

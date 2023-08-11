@@ -22,11 +22,11 @@ router.get("/", function (req, res, next) {
 /* POST add one mentor */
 router.post("/", async function (req, res, next) {
   try {
-    const { full_name, email, password, questionnaire_responses } = req.body;
+    const { full_name, email, questionnaire_responses } = req.body;
 
     const query =
-      "INSERT INTO mentors (full_name, email, password, questionnaire_responses) " +
-      `VALUES ("${full_name}", "${email}", "${password}", "${questionnaire_responses}")`;
+      "INSERT INTO mentors (full_name, email, questionnaire_responses) " +
+      `VALUES ("${full_name}", "${email}", "${questionnaire_responses}")`;
 
     const results = await db(query);
     res.send(results.data);
@@ -53,11 +53,11 @@ router.get("/:id", async function (req, res, next) {
 /* PUT Updatementor by id */
 router.put("/:id", async function (req, res, next) {
   const id = req.params.id;
-  const { full_name, email, password, questionnaire_responses } = req.body;
+  const { full_name, email, questionnaire_responses } = req.body;
 
   try {
     const results = await db(
-      `UPDATE mentors SET full_name = "${full_name}", email = "${email}", password = "${password}", questionnaire_responses = "${questionnaire_responses}" WHERE id = ${id};`
+      `UPDATE mentors SET full_name = "${full_name}", email = "${email}", questionnaire_responses = "${questionnaire_responses}" WHERE id = ${id};`
     );
     res.send(results.data);
   } catch (err) {
