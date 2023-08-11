@@ -3,19 +3,33 @@ import { useState } from "react";
 import TextAreaInput from "../components/TextAreaInput";
 
 export default function Mentor() {
-  const [project, setProject] = useState({
-    image: "",
-    title: "",
-    description: "",
+  const [answers, setAnswers] = useState({
+    fullName: "",
+    email: "",
+    q1: "",
+    q2: "",
+    q3: "",
+    q4: "",
+    q5: "",
+    q6: "",
+    q7: "",
   });
   const [errors, setErrors] = useState({
-    title: false,
-    image: false,
+    fullName: false,
+    email: false,
+    emailInputEmpty: false,
+    q1: false,
+    q2: false,
+    q3: false,
+    q4: false,
+    q5: false,
+    q6: false,
+    q7: false,
   });
 
-  const isValidUrl = (image) => {
-    const res = image.match(
-      /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i
+  const isValidEmail = (email) => {
+    const res = email.match(
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
     );
     return res !== null;
   };
@@ -24,7 +38,7 @@ export default function Mentor() {
     const value = event.target.value;
     const name = event.target.name;
 
-    setProject((state) => ({
+    setAnswers((state) => ({
       ...state,
       [name]: value,
     }));
@@ -39,27 +53,32 @@ export default function Mentor() {
 
     let tempErrors = { ...errors };
 
-    // Check if title is non-empty
-    if (!project.title.trim()) {
-      tempErrors.title = true;
+    // Check if full name is empty
+    if (!answers.fullName.trim()) {
+      tempErrors.fullName = true;
     }
 
-    // Check if URL is valid
-    if (!isValidUrl(project.image)) {
-      tempErrors.image = true;
+    // Check if Email is valid
+    if (!isValidEmail(answers.email) && answers.email.length > 0) {
+      tempErrors.email = true;
     }
 
-    if (tempErrors.title || tempErrors.image) {
-      setErrors(tempErrors);
-      return;
+    // Check if Email is empty
+    if (!answers.email.trim()) {
+      tempErrors.emailInputEmpty = true;
     }
 
-    props.addProject(project);
-    setProject({
-      image: "",
-      title: "",
-      description: "",
-    });
+    // Check if questions are empty
+    const questionNames = ["q1", "q2", "q3", "q4", "q5", "q6", "q7"];
+
+    for (const name of questionNames) {
+      if (!answers[name].trim()) {
+        tempErrors[name] = true;
+      }
+    }
+
+    setErrors(tempErrors);
+    return;
   };
   return (
     <div>
@@ -74,11 +93,11 @@ export default function Mentor() {
                     <label className="label">What is your full name?</label>
                     <input
                       className="input is-rounded"
-                      name="name"
-                      value={project.title}
+                      name="fullName"
+                      value={answers.fullName}
                       onChange={handleInputChange}
                     />
-                    {errors.title && (
+                    {errors.fullName && (
                       <p className="warning">Please enter your full name</p>
                     )}
                   </div>
@@ -86,17 +105,85 @@ export default function Mentor() {
                     <label className="label">Email</label>
                     <input
                       className="input is-rounded"
-                      name="image"
-                      value={project.image}
+                      name="email"
+                      value={answers.email}
                       onChange={handleInputChange}
                     />
                     {/* Change for email */}
-                    {errors.image && <p className="warning">Invalid Email</p>}
+                    {errors.email && <p className="warning">Invalid Email</p>}
+                    {errors.emailInputEmpty && (
+                      <p className="warning">Email is required</p>
+                    )}
                   </div>
                   <TextAreaInput
-                    question="What do you believe are the most important qualities of a successful mentor-mentee relationship?"
+                    question="Tell us about your career experience in tech and what technologies are you proficient in?"
                     name="q1"
+                    value={answers.q1}
+                    handleInputChange={handleInputChange}
                   />
+                  {errors.q1 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <TextAreaInput
+                    question="What are you most passionate about in your career?"
+                    name="q2"
+                    value={answers.q2}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q2 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <TextAreaInput
+                    question="What do you believe are the most important qualities of a successful mentor-mentee relationship?"
+                    name="q3"
+                    value={answers.q3}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q3 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <TextAreaInput
+                    question="What are you hoping to get out of being a mentor?"
+                    name="q4"
+                    value={answers.q4}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q4 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <TextAreaInput
+                    question="What would an ideal mentee profile look like for you?"
+                    name="q5"
+                    value={answers.q5}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q5 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <TextAreaInput
+                    question="What was your career before your time at CodeOp?"
+                    name="q6"
+                    value={answers.q6}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q6 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <TextAreaInput
+                    question="Are there any parts of your identity that might make you somebody’s role model? (eg: gender, ethnicity, sexual orientation, cultural background)"
+                    name="q7"
+                    value={answers.q7}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q7 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
 
                   <div className="is-align-content-end">
                     <button

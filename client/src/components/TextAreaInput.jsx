@@ -1,11 +1,7 @@
 import React from "react";
 
-export default function TextAreaInput(
-  question,
-  name,
-  value,
-  handleInputChange
-) {
+export default function TextAreaInput(props) {
+  const { question, name, value, handleInputChange } = props;
   return (
     <div>
       <div className="field">
@@ -19,12 +15,12 @@ export default function TextAreaInput(
         />
       </div>
       <div className="char-count">
-        {/* <p className={project.description.length === 200 ? "warning" : ""}>
-          {answers.description.length}/200
-          {answers.description.length === 200 && (
+        <p className={{ value }.length === 200 ? "warning" : ""}>
+          {value.length}/200
+          {value.length === 200 && (
             <span> Maximum number of characters reached</span>
           )}
-        </p> */}
+        </p>
       </div>
     </div>
   );
