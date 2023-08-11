@@ -29,7 +29,7 @@ router.post("/", async function (req, res, next) {
       `VALUES ("${full_name}", "${email}", "${questionnaire_responses}")`;
 
     const results = await db(query);
-    res.send(results.data);
+    res.status(200).send({ message: "Successfully added a mentor" });
   } catch (err) {
     res.status(500).send(err);
   }

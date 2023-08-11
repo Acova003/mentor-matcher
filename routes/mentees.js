@@ -23,9 +23,9 @@ router.get("/", function (req, res, next) {
 router.post("/", async function (req, res, next) {
   try {
     const results = await db(
-      `INSERT INTO mentees (full_name, email, questionnaire_responses) VALUES (1, "${req.body.full_name}", "${req.body.email}", "${req.body.questionnaire_responses}");`
+      `INSERT INTO mentees (full_name, email, questionnaire_responses) VALUES ("${req.body.full_name}", "${req.body.email}", "${req.body.questionnaire_responses}");`
     );
-    res.send(results.data);
+    res.status(200).send({ message: "Successfully added a mentee" });
   } catch (err) {
     res.status(500).send(err);
   }
