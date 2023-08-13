@@ -48,7 +48,7 @@ export default function Mentor() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     let tempErrors = { ...errors };
@@ -63,7 +63,7 @@ export default function Mentor() {
       tempErrors.email = true;
     }
 
-    // Check if Email is empty
+    // Check if Email is empty ///////// THERE IS A BUG HERE WHEN THIS HAS THROWN AN ERRO IT STAYS AS AN ERROR
     if (!answers.email.trim()) {
       tempErrors.emailInputEmpty = true;
     }
@@ -78,7 +78,48 @@ export default function Mentor() {
     }
 
     setErrors(tempErrors);
-    return;
+    // if any errors are true, return
+    // send data to backend
+    // if successful, redirect to success page
+    // else, show error message
+
+    if (Object.values(tempErrors).includes(true)) {
+      alert("Please fill out all fields");
+      return;
+    }
+    try {
+      // Serialize JSON and send the request
+      const response = await fetch("/api/mentors", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          full_name: answers.fullName,
+          email: answers.email,
+          q1: answers.q1,
+          q2: answers.q2,
+          q3: answers.q3,
+          q4: answers.q4,
+          q5: answers.q5,
+          q6: answers.q6,
+          q7: answers.q7,
+        }),
+      });
+
+      // Parse the response JSON
+      const data = await response.json();
+      console.log(data);
+
+      if (data.message) {
+        alert(
+          "You've successfully submitted your questionnaire! We'll be in touch soon."
+        );
+      }
+    } catch (err) {
+      console.error("Error during submission:", err);
+      alert("An error occurred while submitting the form.");
+    }
   };
   return (
     <div>
