@@ -17,7 +17,13 @@ CREATE TABLE mentees(
     id INT NOT NULL AUTO_INCREMENT, 
     full_name VARCHAR(225) not null, 
     email VARCHAR(40) not null, 
-    questionnaire_responses JSON,
+    q1 VARCHAR(225) not null,
+    q2 VARCHAR(225) not null,
+    q3 VARCHAR(225) not null,
+    q4 VARCHAR(225) not null,
+    q5 VARCHAR(225) not null,
+    q6 VARCHAR(225) not null,
+    q7 VARCHAR(225) not null,
     PRIMARY KEY (id)
     );
 
@@ -26,7 +32,13 @@ CREATE TABLE mentors (
     id INT NOT NULL AUTO_INCREMENT, 
     full_name VARCHAR(225) not null, 
     email VARCHAR(40) not null,
-    questionnaire_responses JSON,
+    q1 VARCHAR(225) not null,
+    q2 VARCHAR(225) not null,
+    q3 VARCHAR(225) not null,
+    q4 VARCHAR(225) not null,
+    q5 VARCHAR(225) not null,
+    q6 VARCHAR(225) not null,
+    q7 VARCHAR(225) not null,
     PRIMARY KEY (id)
     );
 
