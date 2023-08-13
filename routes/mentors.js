@@ -22,11 +22,11 @@ router.get("/", function (req, res, next) {
 /* POST add one mentor */
 router.post("/", async function (req, res, next) {
   try {
-    const { full_name, email, questionnaire_responses } = req.body;
+    const { full_name, email, q1, q2, q3, q4, q5, q6, q7 } = req.body;
 
     const query =
-      "INSERT INTO mentors (full_name, email, questionnaire_responses) " +
-      `VALUES ("${full_name}", "${email}", "${questionnaire_responses}")`;
+      "INSERT INTO mentors (full_name, email, q1, q2, q3, q4, q5, q6, q7) " +
+      `VALUES ("${full_name}", "${email}", "${q1}", "${q2}", "${q3}", "${q4}", "${q5}", "${q6}", "${q7}")`;
 
     const results = await db(query);
     res.status(200).send({ message: "Successfully added a mentor" });
