@@ -1,5 +1,247 @@
 import React from "react";
+import { useState } from "react";
+import TextAreaInput from "../components/TextAreaInput";
 
 export default function Mentee() {
-  return <div>Mentee</div>;
+  const [answers, setAnswers] = useState({
+    fullName: "",
+    email: "",
+    q1: "",
+    q2: "",
+    q3: "",
+    q4: "",
+    q5: "",
+    q6: "",
+    q7: "",
+  });
+  const [errors, setErrors] = useState({
+    fullName: false,
+    email: false,
+    emailInputEmpty: false,
+    q1: false,
+    q2: false,
+    q3: false,
+    q4: false,
+    q5: false,
+    q6: false,
+    q7: false,
+  });
+
+  const isValidEmail = (email) => {
+    const res = email.match(
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+    );
+    return res !== null;
+  };
+
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    const name = event.target.name;
+
+    setAnswers((state) => ({
+      ...state,
+      [name]: value,
+    }));
+    setErrors((state) => ({
+      ...state,
+      [name]: false,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let tempErrors = { ...errors };
+
+    // Check if full name is empty
+    if (!answers.fullName.trim()) {
+      tempErrors.fullName = true;
+    }
+
+    // Check if Email is valid
+    if (!isValidEmail(answers.email) && answers.email.length > 0) {
+      tempErrors.email = true;
+    }
+
+    // Check if Email is empty
+    if (!answers.email.trim()) {
+      tempErrors.emailInputEmpty = true;
+    }
+
+    // Check if questions are empty
+    const questionNames = ["q1", "q2", "q3", "q4", "q5", "q6", "q7"];
+
+    for (const name of questionNames) {
+      if (!answers[name].trim()) {
+        tempErrors[name] = true;
+      }
+    }
+
+    setErrors(tempErrors);
+    // if any errors are true, return
+    // send data to backend
+    // if successful, redirect to success page
+    // else, show error message
+
+    if (Object.values(tempErrors).includes(true)) {
+      alert("Please fill out all fields");
+      return;
+    }
+
+    try {
+      // Serialize JSON and send the request
+      const response = await fetch("/api/mentees", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          full_name: answers.fullName,
+          email: answers.email,
+          q1: answers.q1,
+          q2: answers.q2,
+          q3: answers.q3,
+          q4: answers.q4,
+          q5: answers.q5,
+          q6: answers.q6,
+          q7: answers.q7,
+        }),
+      });
+
+      // Parse the response JSON
+      const data = await response.json();
+      console.log(data);
+
+      if (data.message) {
+        alert(
+          "You've successfully submitted your questionnaire! We'll be in touch soon."
+        );
+      }
+    } catch (err) {
+      console.error("Error during submission:", err);
+      alert("An error occurred while submitting the form.");
+    }
+  };
+
+  return (
+    <div>
+      <div className="outer-container">
+        <div className="container">
+          <div className="card">
+            <div className="card-content">
+              <div className="form-container content">
+                <form onSubmit={handleSubmit}>
+                  <div className="field">
+                    {/* This name input field should be removed when registration is created */}
+                    <label className="label">What is your full name?</label>
+                    <input
+                      className="input is-rounded"
+                      name="fullName"
+                      value={answers.fullName}
+                      onChange={handleInputChange}
+                    />
+                    {errors.fullName && (
+                      <p className="warning">Please enter your full name</p>
+                    )}
+                  </div>
+                  <div className="field">
+                    <label className="label">Email</label>
+                    <input
+                      className="input is-rounded"
+                      name="email"
+                      value={answers.email}
+                      onChange={handleInputChange}
+                    />
+                    {/* Change for email */}
+                    {errors.email && <p className="warning">Invalid Email</p>}
+                    {errors.emailInputEmpty && (
+                      <p className="warning">Email is required</p>
+                    )}
+                  </div>
+                  <TextAreaInput
+                    question="What are your career goals? Is there a specific role in tech that you are interested in?"
+                    name="q1"
+                    value={answers.q1}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q1 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <TextAreaInput
+                    question="What would be your ideal mentor profile?"
+                    name="q2"
+                    value={answers.q2}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q2 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <TextAreaInput
+                    question="What do you believe are the most important qualities of a successful mentor-mentee relationship?"
+                    name="q3"
+                    value={answers.q3}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q3 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <TextAreaInput
+                    question="Are there any parts of your identity that you would like to see reflected in a mentor? (eg: gender, ethnicity, sexual orientation, cultural background)"
+                    name="q4"
+                    value={answers.q4}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q4 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <TextAreaInput
+                    question="What skills do you want to develop?"
+                    name="q5"
+                    value={answers.q5}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q5 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <TextAreaInput
+                    question="What was your job/career before joining CodeOp?"
+                    name="q6"
+                    value={answers.q6}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q6 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <TextAreaInput
+                    question="What do you hope to achieve through mentorship?"
+                    name="q7"
+                    value={answers.q7}
+                    handleInputChange={handleInputChange}
+                  />
+                  {errors.q7 && (
+                    <p className="warning">Please answer the question</p>
+                  )}
+
+                  <div className="is-align-content-end">
+                    <button
+                      className="button is-primary is-rounded"
+                      type="submit"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
