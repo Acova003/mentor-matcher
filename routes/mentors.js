@@ -38,7 +38,7 @@ router.post("/", async function (req, res, next) {
 
     const query =
       "INSERT INTO mentors (first_name, last_name, email, linkedin_url, q1, q2, q3, q4, q5, q6, q7) " +
-      `VALUES ("${first_name}", "${last_name}", "${email}", "${linkedin_url}, "${q1}", "${q2}", "${q3}", "${q4}", "${q5}", "${q6}", "${q7}")`;
+      `VALUES ("${first_name}", "${last_name}", "${email}", "${linkedin_url}", "${q1}", "${q2}", "${q3}", "${q4}", "${q5}", "${q6}", "${q7}")`;
 
     const results = await db(query);
     res.status(200).send({ message: "Successfully added a mentor" });
@@ -92,9 +92,10 @@ router.put("/:id", async function (req, res, next) {
 /* DELETE mentor by id */
 router.delete("/:id", async function (req, res, next) {
   const id = req.params.id;
+  console.log(id);
   try {
-    await db(`DELETE FROM mentor_mentee WHERE mentor_id = ${id};`);
     const results = await db(`DELETE FROM mentors WHERE id = ${id};`);
+
     res.send(results.data);
   } catch (err) {
     res.status(500).send(err);
