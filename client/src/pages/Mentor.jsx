@@ -109,7 +109,6 @@ export default function Mentor() {
     // else, show error message
 
     if (Object.values(tempErrors).includes(true)) {
-      alert("Please fill out all fields");
       return;
     }
     try {
@@ -120,17 +119,18 @@ export default function Mentor() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          firstname: answers.firstName,
-          lastname: answers.lastName,
+          first_name: answers.firstName,
+          last_name: answers.lastName,
           email: answers.email,
-          linkedinurl: answers.linkedinUrl,
-          q1: answers.q1,
-          q2: answers.q2,
-          q3: answers.q3,
-          q4: answers.q4,
-          q5: answers.q5,
-          q6: answers.q6,
-          q7: answers.q7,
+          linkedin_url: answers.linkedinUrl,
+          // remove special characters from answers to sanitize the input
+          q1: answers.q1.replace(/[^\w\s]/gi, ""),
+          q2: answers.q2.replace(/[^\w\s]/gi, ""),
+          q3: answers.q3.replace(/[^\w\s]/gi, ""),
+          q4: answers.q4.replace(/[^\w\s]/gi, ""),
+          q5: answers.q5.replace(/[^\w\s]/gi, ""),
+          q6: answers.q6.replace(/[^\w\s]/gi, ""),
+          q7: answers.q7.replace(/[^\w\s]/gi, ""),
         }),
       });
 
@@ -142,6 +142,21 @@ export default function Mentor() {
         alert(
           "You've successfully submitted your questionnaire! We'll be in touch soon."
         );
+
+        // Reset the form after successful submission
+        setAnswers({
+          firstName: "",
+          lastName: "",
+          email: "",
+          linkedinUrl: "",
+          q1: "",
+          q2: "",
+          q3: "",
+          q4: "",
+          q5: "",
+          q6: "",
+          q7: "",
+        });
       }
     } catch (err) {
       console.error("Error during submission:", err);
@@ -150,6 +165,26 @@ export default function Mentor() {
   };
   return (
     <div>
+      <div className="is-hidden-mobile" id="mentee-greeting">
+        <p className="subtitle is-3">
+          Thank you for your interest in CodeOp's mentorship program! Please
+          fill out the following questionnaire below to help us match you with a
+          student mentee.
+        </p>
+
+        {/* embed youtube video */}
+        <div className="video-container">
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/bQsfsYRq8d0"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
       <div className="outer-container">
         <div className="container">
           <div className="card">
@@ -166,7 +201,7 @@ export default function Mentor() {
                       onChange={handleInputChange}
                     />
                     {errors.firstName && (
-                      <p className="warning">Please enter your first name</p>
+                      <p className="warning">*Please enter your first name</p>
                     )}
                   </div>
                   <div className="field">
@@ -179,7 +214,7 @@ export default function Mentor() {
                       onChange={handleInputChange}
                     />
                     {errors.lastName && (
-                      <p className="warning">Please enter your last name</p>
+                      <p className="warning">*Please enter your last name</p>
                     )}
                   </div>
                   <div className="field">
@@ -190,9 +225,9 @@ export default function Mentor() {
                       value={answers.email}
                       onChange={handleInputChange}
                     />
-                    {errors.email && <p className="warning">Invalid Email</p>}
+                    {errors.email && <p className="warning">*Invalid Email</p>}
                     {errors.emailInputEmpty && (
-                      <p className="warning">Email is required</p>
+                      <p className="warning">*Email is required</p>
                     )}
                   </div>
                   <div className="field">
@@ -204,7 +239,7 @@ export default function Mentor() {
                       onChange={handleInputChange}
                     />
                     {errors.linkedinUrl && (
-                      <p className="warning">Invalid LinkedIn URL</p>
+                      <p className="warning">*Invalid LinkedIn URL</p>
                     )}
                   </div>
                   <TextAreaInput
@@ -214,7 +249,7 @@ export default function Mentor() {
                     handleInputChange={handleInputChange}
                   />
                   {errors.q1 && (
-                    <p className="warning">Please answer the question</p>
+                    <p className="warning">*Please answer the question</p>
                   )}
 
                   <TextAreaInput
@@ -224,7 +259,7 @@ export default function Mentor() {
                     handleInputChange={handleInputChange}
                   />
                   {errors.q2 && (
-                    <p className="warning">Please answer the question</p>
+                    <p className="warning">*Please answer the question</p>
                   )}
 
                   <TextAreaInput
@@ -234,7 +269,7 @@ export default function Mentor() {
                     handleInputChange={handleInputChange}
                   />
                   {errors.q3 && (
-                    <p className="warning">Please answer the question</p>
+                    <p className="warning">*Please answer the question</p>
                   )}
 
                   <TextAreaInput
@@ -244,7 +279,7 @@ export default function Mentor() {
                     handleInputChange={handleInputChange}
                   />
                   {errors.q4 && (
-                    <p className="warning">Please answer the question</p>
+                    <p className="warning">*Please answer the question</p>
                   )}
 
                   <TextAreaInput
@@ -254,7 +289,7 @@ export default function Mentor() {
                     handleInputChange={handleInputChange}
                   />
                   {errors.q5 && (
-                    <p className="warning">Please answer the question</p>
+                    <p className="warning">*Please answer the question</p>
                   )}
 
                   <TextAreaInput
@@ -264,7 +299,7 @@ export default function Mentor() {
                     handleInputChange={handleInputChange}
                   />
                   {errors.q6 && (
-                    <p className="warning">Please answer the question</p>
+                    <p className="warning">*Please answer the question</p>
                   )}
 
                   <TextAreaInput
@@ -274,13 +309,14 @@ export default function Mentor() {
                     handleInputChange={handleInputChange}
                   />
                   {errors.q7 && (
-                    <p className="warning">Please answer the question</p>
+                    <p className="warning">*Please answer the question</p>
                   )}
 
                   <div className="is-align-content-end">
                     <button
                       className="button is-primary is-rounded"
                       type="submit"
+                      style={{ marginTop: "16px" }}
                     >
                       Submit
                     </button>

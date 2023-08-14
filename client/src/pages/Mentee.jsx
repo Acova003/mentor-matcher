@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import TextAreaInput from "../components/TextAreaInput";
+import CommunityImage from "../assets/community-image.png";
 
 export default function Mentee() {
   const [answers, setAnswers] = useState({
@@ -123,13 +124,14 @@ export default function Mentee() {
           last_name: answers.lastName,
           email: answers.email,
           linkedin_url: answers.linkedinUrl,
-          q1: answers.q1,
-          q2: answers.q2,
-          q3: answers.q3,
-          q4: answers.q4,
-          q5: answers.q5,
-          q6: answers.q6,
-          q7: answers.q7,
+          // Remove all special characters from the answers to santize the input
+          q1: answers.q1.replace(/[^\w\s]/gi, ""),
+          q2: answers.q2.replace(/[^\w\s]/gi, ""),
+          q3: answers.q3.replace(/[^\w\s]/gi, ""),
+          q4: answers.q4.replace(/[^\w\s]/gi, ""),
+          q5: answers.q5.replace(/[^\w\s]/gi, ""),
+          q6: answers.q6.replace(/[^\w\s]/gi, ""),
+          q7: answers.q7.replace(/[^\w\s]/gi, ""),
         }),
       });
 
@@ -141,6 +143,21 @@ export default function Mentee() {
         alert(
           "You've successfully submitted your questionnaire! We'll be in touch soon."
         );
+
+        // Reset the form after successful submission
+        setAnswers({
+          firstName: "",
+          lastName: "",
+          email: "",
+          linkedinUrl: "",
+          q1: "",
+          q2: "",
+          q3: "",
+          q4: "",
+          q5: "",
+          q6: "",
+          q7: "",
+        });
       }
     } catch (err) {
       console.error("Error during submission:", err);
@@ -150,6 +167,16 @@ export default function Mentee() {
 
   return (
     <div>
+      <div className="is-hidden-mobile" id="mentee-greeting">
+        <p className="subtitle is-3">
+          Thank you for your interest in CodeOp's mentorship program! Please
+          fill out the following questionnaire below to help us match you with a
+          mentor.
+        </p>
+        <figure className="image is-256x256">
+          <img src={CommunityImage} alt="community" />
+        </figure>
+      </div>
       <div className="outer-container">
         <div className="container">
           <div className="card">
@@ -282,6 +309,7 @@ export default function Mentee() {
                     <button
                       className="button is-primary is-rounded"
                       type="submit"
+                      style={{ marginTop: "16px" }}
                     >
                       Submit
                     </button>
