@@ -11,41 +11,68 @@ const openai = new OpenAIApi(configuration);
 // Send all mentor and mentee questionnaire responses to chatgpt to generate matches
 router.post("/", async function (req, res, next) {
   try {
+    console.log("getting mentor responses");
+
     const mentorResponses = await getQuestionnaireResponses("mentors");
+    // console.log(mentorResponses);
+
+    console.log("getting mentee responses");
     const menteeResponses = await getQuestionnaireResponses("mentees");
+    // console.log(menteeResponses);
+    console.log("calling generateMatches function");
+
     const matchResults = await generateMatches(
       mentorResponses,
       menteeResponses
     );
 
-    res.json({ matchResults });
+    console.log(`match results: ${matchResults}`);
+
+    console.log("deleting previous matches");
+    // Delete previous matches from database
+    await db("DELETE FROM mentor_mentee;");
 
     // insert match results into database mentor_mentee table
 
-    // for (let match of matchResults.matches) {
-    //   const { mentor_id, mentee_id, compatibility_score, description } = match;
+    console.log("for loop of match results");
+    for (let match of matchResults.matches) {
+      const {
+        mentor_id,
+        mentee_id,
+        compatibility_score,
+        compatibility_description,
+      } = match;
 
-    //   const query =
-    //     "INSERT INTO mentor_mentee (mentor_id, mentee_id, compatibility_score, compatibility_description) " +
-    //     `VALUES ("${mentor_id}", "${mentee_id}", "${compatibility_score}", "${description}")`;
+      const query =
+        "INSERT INTO mentor_mentee (mentor_id, mentee_id, compatibility_score, compatibility_description) " +
+        `VALUES ("${mentor_id}", "${mentee_id}", "${compatibility_score}", "${compatibility_description}");`;
 
-    //   await db(query);
-    // }
+      console.log("inserting new matches to db");
+      await db(query);
+    }
+
+    console.log("sending match results");
+    res.json({ matchResults });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "An error occurred" });
+    res
+      .status(500)
+      .json({ error: "An error occurred in the overall endpoint" });
   }
 });
 
 const getQuestionnaireResponses = async (tableName) => {
   try {
     const responses = await db(
-      `SELECT id, q1, q2, q3, q4, q5, q6, q7 FROM ${tableName};`
+      `SELECT id, first_name, q1, q2, q3, q4, q5, q6, q7 FROM ${tableName};`
     );
 
     return responses.data;
   } catch (error) {
-    console.error(error);
+    console.error(
+      `generateQuestionnaireResponses error for ${tableName}: `,
+      error
+    );
     throw error;
   }
 };
@@ -85,7 +112,7 @@ const generateMatches = async (mentorResponses, menteeResponses) => {
           mentor_id: 2,
           mentee_id: 1,
           compatibility_score: 85,
-          description: "Example description about compatibility.",
+          compatibility_description: "Example description about compatibility.",
         },
       ],
       unmatched: {
@@ -99,10 +126,13 @@ Based on the provided data for ${menteeResponses.length} mentees and ${
       mentorResponses.length
     } mentors, I need you to:
 
+    HARD REQUIREMENTS:
+    DO NOT INCLUDE ANYTHING OUTSIDE OF THE CURLY BRACES OF THE JSON OBJECT. DO NOT USE ANY ESCAPED CHARACTERS IN YOUR DESCRIPTIONS. FINISH YOUR ANSWER.
+
 1. Analyze the responses and match each mentee to one mentor for a software engineering bootcamp.
 2. Determine their compatibility using the given questions and answers.
 3. Generate a compatibility score ranging from 1 to 100.
-4. Craft a description, that's between 400-500 characters, explaining their compatibility.
+4. Craft a description, that's between 400-500 characters, explaining their compatibility. Use their first names in the description.
 5. Make sure every mentee is paired with only one mentor.
 6. Crucially, include any unmatched mentor's ID in the 'unmatched mentors' section.
 7. Provide the results in the following JSON structure: ${JSON.stringify(
@@ -112,30 +142,14 @@ Based on the provided data for ${menteeResponses.length} mentees and ${
 9. Ensure the returned results do not contain the original question answers.
 
 It's essential to follow these guidelines strictly.
+
+Here is the data: ${JSON.stringify(formatDataSet)}
 `;
 
-    // const schema = {
-    //   matches: [
-    //     {
-    //       mentor_id: "mentor_id",
-    //       mentee_id: "mentee_id",
-    //       compatibility_score: "compatibility_score an integer from 1-100",
-    //       description: "description a string with a maximum of 500 characters",
-    //     },
-    //   ],
-    //   unmatched: {
-    //     mentors: [
-    //       "An simple array of just ids of mentors that were not matched with a mentee. Neither question answers or a description of why they were not matched are not required.",
-    //     ],
-    //   },
-    // };
-
-    // const prompt = `return mentor and mentee matches for ${JSON.stringify(
-    //   formatDataSet
-    // )}. I want one mentor per mentee at a software engineering bootcamp. I want to match based on a compatibility score with a value from 1-100 and I want you to write a description of why they are compatible with a maximum of 500 characters. Don't include unmatched mentors in matches. I want you to give me the results in JSON with this format ${schema}. Since mentees should only be matched once,  the IDs of all unmatched mentors should be added to the unmatched mentors array. The question answers do not need to be included in the results.`;
+    // Here is the data: ${JSON.stringify(formatDataSet)}
 
     const response = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4",
       messages: [
         { role: "system", content: "You are a helpful mentor/mentee matcher." },
         { role: "user", content: prompt },
@@ -144,7 +158,7 @@ It's essential to follow these guidelines strictly.
 
     let parsedData;
     console.log(
-      `This is all of my data ${response.data.choices[0].message.content}`
+      `This is the data received from chatgpt: ${response.data.choices[0].message.content}`
     );
 
     try {
@@ -154,18 +168,13 @@ It's essential to follow these guidelines strictly.
       return;
     }
 
+    console.log("parsed data: ", parsedData);
     return parsedData;
   } catch (error) {
-    console.error(error);
+    console.error("Error of generateMatches function", error);
+    // res.status(500).json({ error: `An error occurred: ${error.message}` });
     throw error;
   }
 };
-
-// TO DO
-// BUG: escape ' in questionnaire responses
-// BUG: escape " in questionnaire responses
-// BUG: escape \ in questionnaire responses
-// BUG: escape \n in questionnaire responses
-// BUG: escape \r in questionnaire responses
 
 module.exports = router;
