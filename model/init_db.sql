@@ -15,30 +15,34 @@ SET foreign_key_checks = 1;
 
 CREATE TABLE mentees(
     id INT NOT NULL AUTO_INCREMENT, 
-    full_name VARCHAR(225) not null, 
+    first_name VARCHAR(225) not null, 
+    last_name VARCHAR(225) not null,
     email VARCHAR(40) not null, 
-    q1 VARCHAR(225) not null,
-    q2 VARCHAR(225) not null,
-    q3 VARCHAR(225) not null,
-    q4 VARCHAR(225) not null,
-    q5 VARCHAR(225) not null,
-    q6 VARCHAR(225) not null,
-    q7 VARCHAR(225) not null,
+    linkedin_url VARCHAR(225),
+    q1 VARCHAR(500) not null,
+    q2 VARCHAR(500) not null,
+    q3 VARCHAR(500) not null,
+    q4 VARCHAR(500) not null,
+    q5 VARCHAR(500) not null,
+    q6 VARCHAR(500) not null,
+    q7 VARCHAR(500) not null,
     PRIMARY KEY (id)
     );
 
 
 CREATE TABLE mentors ( 
     id INT NOT NULL AUTO_INCREMENT, 
-    full_name VARCHAR(225) not null, 
+    first_name VARCHAR(225) not null, 
+    last_name VARCHAR(225) not null,
     email VARCHAR(40) not null,
-    q1 VARCHAR(225) not null,
-    q2 VARCHAR(225) not null,
-    q3 VARCHAR(225) not null,
-    q4 VARCHAR(225) not null,
-    q5 VARCHAR(225) not null,
-    q6 VARCHAR(225) not null,
-    q7 VARCHAR(225) not null,
+    linkedin_url VARCHAR(225),
+    q1 VARCHAR(500) not null,
+    q2 VARCHAR(500) not null,
+    q3 VARCHAR(500) not null,
+    q4 VARCHAR(500) not null,
+    q5 VARCHAR(500) not null,
+    q6 VARCHAR(500) not null,
+    q7 VARCHAR(500) not null,
     PRIMARY KEY (id)
     );
 
