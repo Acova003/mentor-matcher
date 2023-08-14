@@ -4,8 +4,10 @@ import TextAreaInput from "../components/TextAreaInput";
 
 export default function Mentor() {
   const [answers, setAnswers] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
+    linkedinUrl: "",
     q1: "",
     q2: "",
     q3: "",
@@ -15,9 +17,11 @@ export default function Mentor() {
     q7: "",
   });
   const [errors, setErrors] = useState({
-    fullName: false,
+    firstName: false,
+    lastName: false,
     email: false,
     emailInputEmpty: false,
+    linkedinUrl: false,
     q1: false,
     q2: false,
     q3: false,
@@ -30,6 +34,13 @@ export default function Mentor() {
   const isValidEmail = (email) => {
     const res = email.match(
       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+    );
+    return res !== null;
+  };
+
+  const isValidLinkedInUrl = (linkedinUrl) => {
+    const res = linkedinUrl.match(
+      /^(https?:\/\/)?(www\.)?linkedin\.com\/(in\/[^\/]+\/?|(pub\/[^\/]+\/[^\/]+\/[^\/]+\/[^\/]+)|(company\/[^\/]+\/?))$/
     );
     return res !== null;
   };
@@ -53,9 +64,14 @@ export default function Mentor() {
 
     let tempErrors = { ...errors };
 
-    // Check if full name is empty
-    if (!answers.fullName.trim()) {
-      tempErrors.fullName = true;
+    // Check if first name is empty
+    if (!answers.firstName.trim()) {
+      tempErrors.firstName = true;
+    }
+
+    // Check if last name is empty
+    if (!answers.lastName.trim()) {
+      tempErrors.lastName = true;
     }
 
     // Check if Email is valid
@@ -68,9 +84,18 @@ export default function Mentor() {
       tempErrors.emailInputEmpty = true;
     }
 
+    // Check if LinkedIn URL is valid
+    if (
+      !isValidLinkedInUrl(answers.linkedinUrl) &&
+      answers.linkedinUrl.length > 0
+    ) {
+      tempErrors.linkedinUrl = true;
+    }
+
     // Check if questions are empty
     const questionNames = ["q1", "q2", "q3", "q4", "q5", "q6", "q7"];
 
+    // loop through all questions and check if they are empty
     for (const name of questionNames) {
       if (!answers[name].trim()) {
         tempErrors[name] = true;
@@ -95,8 +120,10 @@ export default function Mentor() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          full_name: answers.fullName,
+          firstname: answers.firstName,
+          lastname: answers.lastName,
           email: answers.email,
+          linkedinurl: answers.linkedinUrl,
           q1: answers.q1,
           q2: answers.q2,
           q3: answers.q3,
@@ -131,15 +158,28 @@ export default function Mentor() {
                 <form onSubmit={handleSubmit}>
                   <div className="field">
                     {/* This name input field should be removed when registration is created */}
-                    <label className="label">What is your full name?</label>
+                    <label className="label">What is your first name?</label>
                     <input
                       className="input is-rounded"
-                      name="fullName"
-                      value={answers.fullName}
+                      name="firstName"
+                      value={answers.firstName}
                       onChange={handleInputChange}
                     />
-                    {errors.fullName && (
-                      <p className="warning">Please enter your full name</p>
+                    {errors.firstName && (
+                      <p className="warning">Please enter your first name</p>
+                    )}
+                  </div>
+                  <div className="field">
+                    {/* This name input field should be removed when registration is created */}
+                    <label className="label">What is your last name?</label>
+                    <input
+                      className="input is-rounded"
+                      name="lastName"
+                      value={answers.lastName}
+                      onChange={handleInputChange}
+                    />
+                    {errors.lastName && (
+                      <p className="warning">Please enter your last name</p>
                     )}
                   </div>
                   <div className="field">
@@ -150,10 +190,21 @@ export default function Mentor() {
                       value={answers.email}
                       onChange={handleInputChange}
                     />
-                    {/* Change for email */}
                     {errors.email && <p className="warning">Invalid Email</p>}
                     {errors.emailInputEmpty && (
                       <p className="warning">Email is required</p>
+                    )}
+                  </div>
+                  <div className="field">
+                    <label className="label">LinkedIn profile URL</label>
+                    <input
+                      className="input is-rounded"
+                      name="linkedinUrl"
+                      value={answers.linkedinUrl}
+                      onChange={handleInputChange}
+                    />
+                    {errors.linkedinUrl && (
+                      <p className="warning">Invalid LinkedIn URL</p>
                     )}
                   </div>
                   <TextAreaInput

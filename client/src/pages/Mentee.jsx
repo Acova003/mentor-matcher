@@ -4,8 +4,10 @@ import TextAreaInput from "../components/TextAreaInput";
 
 export default function Mentee() {
   const [answers, setAnswers] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
+    linkedinUrl: "",
     q1: "",
     q2: "",
     q3: "",
@@ -34,6 +36,13 @@ export default function Mentee() {
     return res !== null;
   };
 
+  const isValidLinkedInUrl = (linkedinUrl) => {
+    const res = linkedinUrl.match(
+      /^(https?:\/\/)?(www\.)?linkedin\.com\/(in\/[^\/]+\/?|(pub\/[^\/]+\/[^\/]+\/[^\/]+\/[^\/]+)|(company\/[^\/]+\/?))$/
+    );
+    return res !== null;
+  };
+
   const handleInputChange = (event) => {
     const value = event.target.value;
     const name = event.target.name;
@@ -53,9 +62,14 @@ export default function Mentee() {
 
     let tempErrors = { ...errors };
 
-    // Check if full name is empty
-    if (!answers.fullName.trim()) {
-      tempErrors.fullName = true;
+    // Check if first name is empty
+    if (!answers.firstName.trim()) {
+      tempErrors.firstName = true;
+    }
+
+    // Check if last name is empty
+    if (!answers.lastName.trim()) {
+      tempErrors.lastName = true;
     }
 
     // Check if Email is valid
@@ -68,9 +82,18 @@ export default function Mentee() {
       tempErrors.emailInputEmpty = true;
     }
 
+    // Check if LinkedIn URL is valid
+    if (
+      !isValidLinkedInUrl(answers.linkedinUrl) &&
+      answers.linkedinUrl.length > 0
+    ) {
+      tempErrors.linkedinUrl = true;
+    }
+
     // Check if questions are empty
     const questionNames = ["q1", "q2", "q3", "q4", "q5", "q6", "q7"];
 
+    // Loop through all questions and check if they are empty
     for (const name of questionNames) {
       if (!answers[name].trim()) {
         tempErrors[name] = true;
@@ -96,8 +119,10 @@ export default function Mentee() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          full_name: answers.fullName,
+          first_name: answers.firstName,
+          last_name: answers.lastName,
           email: answers.email,
+          linkedin_url: answers.linkedinUrl,
           q1: answers.q1,
           q2: answers.q2,
           q3: answers.q3,
@@ -133,15 +158,28 @@ export default function Mentee() {
                 <form onSubmit={handleSubmit}>
                   <div className="field">
                     {/* This name input field should be removed when registration is created */}
-                    <label className="label">What is your full name?</label>
+                    <label className="label">What is your first name?</label>
                     <input
                       className="input is-rounded"
-                      name="fullName"
-                      value={answers.fullName}
+                      name="firstName"
+                      value={answers.firstName}
                       onChange={handleInputChange}
                     />
-                    {errors.fullName && (
-                      <p className="warning">Please enter your full name</p>
+                    {errors.firstName && (
+                      <p className="warning">Please enter your first name</p>
+                    )}
+                  </div>
+                  <div className="field">
+                    {/* This name input field should be removed when registration is created */}
+                    <label className="label">What is your last name?</label>
+                    <input
+                      className="input is-rounded"
+                      name="lastName"
+                      value={answers.lastName}
+                      onChange={handleInputChange}
+                    />
+                    {errors.lastName && (
+                      <p className="warning">Please enter your last name</p>
                     )}
                   </div>
                   <div className="field">
@@ -156,6 +194,18 @@ export default function Mentee() {
                     {errors.email && <p className="warning">Invalid Email</p>}
                     {errors.emailInputEmpty && (
                       <p className="warning">Email is required</p>
+                    )}
+                  </div>
+                  <div className="field">
+                    <label className="label">LinkedIn profile URL</label>
+                    <input
+                      className="input is-rounded"
+                      name="linkedinUrl"
+                      value={answers.linkedinUrl}
+                      onChange={handleInputChange}
+                    />
+                    {errors.linkedinUrl && (
+                      <p className="warning">Invalid LinkedIn URL</p>
                     )}
                   </div>
                   <TextAreaInput
