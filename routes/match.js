@@ -8,9 +8,71 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
+// get all matches
+router.get("/", async function (req, res, next) {
+  try {
+    const matchedResults = await db(`
+    SELECT 
+        mentor_mentee.id, 
+        mentor_id, 
+        mentee_id, 
+        compatibility_score, 
+        compatibility_description, 
+        mentors.first_name AS mentor_first_name, 
+        mentors.last_name AS mentor_last_name, 
+        mentees.first_name AS mentee_first_name,
+        mentees.last_name AS mentee_last_name 
+    FROM 
+        mentor_mentee 
+    INNER JOIN 
+        mentors ON mentor_mentee.mentor_id = mentors.id 
+    INNER JOIN 
+        mentees ON mentor_mentee.mentee_id = mentees.id;
+`);
+
+    const unmatchedMentors = await db(
+      "SELECT id, first_name, last_name FROM mentors WHERE id NOT IN (SELECT mentor_id FROM mentor_mentee);"
+    );
+
+    // Create a combined response
+    const combinedResults = {
+      matches: matchedResults.data,
+      unmatchedMentors: unmatchedMentors.data,
+    };
+
+    if (
+      !combinedResults.matches.length &&
+      !combinedResults.unmatchedMentors.length
+    ) {
+      res
+        .status(404)
+        .send({ msg: "There is no data available. Please add more data." });
+    } else {
+      res.send(combinedResults);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: "An error occurred fetching the data." });
+  }
+});
+
+// remove all matches data from database
+router.delete("/clear-matches", async function (req, res, next) {
+  try {
+    await db("DELETE FROM mentor_mentee;");
+    res.send({ msg: "All matches have been deleted." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: "An error occurred deleting the data." });
+  }
+});
+
 // Send all mentor and mentee questionnaire responses to chatgpt to generate matches
 router.post("/", async function (req, res, next) {
   try {
+    // First, delete previous matches from the database
+    // await db("DELETE FROM mentor_mentee;");
+
     console.log("getting mentor responses");
 
     const mentorResponses = await getQuestionnaireResponses("mentors");
@@ -29,8 +91,6 @@ router.post("/", async function (req, res, next) {
     console.log(`match results: ${matchResults}`);
 
     console.log("deleting previous matches");
-    // Delete previous matches from database
-    await db("DELETE FROM mentor_mentee;");
 
     // insert match results into database mentor_mentee table
 
@@ -101,8 +161,8 @@ const generateMatches = async (mentorResponses, menteeResponses) => {
         q7: "What do you hope to achieve through mentorship?",
       },
     },
-    mentorResponses: mentorResponses,
-    menteeResponses: menteeResponses,
+    mentorResponses,
+    menteeResponses,
   };
 
   try {
@@ -127,7 +187,9 @@ Based on the provided data for ${menteeResponses.length} mentees and ${
     } mentors, I need you to:
 
     HARD REQUIREMENTS:
-    DO NOT INCLUDE ANYTHING OUTSIDE OF THE CURLY BRACES OF THE JSON OBJECT. DO NOT USE ANY ESCAPED CHARACTERS IN YOUR DESCRIPTIONS. FINISH YOUR ANSWER.
+    DO NOT INCLUDE ANYTHING OUTSIDE OF THE CURLY BRACES OF THE JSON OBJECT. 
+    DO NOT USE ANY ESCAPED CHARACTERS IN YOUR DESCRIPTIONS. 
+    FINISH YOUR ANSWER.
 
 1. Analyze the responses and match each mentee to one mentor for a software engineering bootcamp.
 2. Determine their compatibility using the given questions and answers.
@@ -161,8 +223,21 @@ Here is the data: ${JSON.stringify(formatDataSet)}
       `This is the data received from chatgpt: ${response.data.choices[0].message.content}`
     );
 
+    // Cleansing the data before parsing
+    const cleanseResponseData = (data) => {
+      const startIndex = data.indexOf("{");
+      if (startIndex !== -1) {
+        return data.substring(startIndex);
+      }
+      return null;
+    };
+    // Cleansing the data before parsing
+    const cleansedResponse = cleanseResponseData(
+      response.data.choices[0].message.content
+    );
+
     try {
-      parsedData = JSON.parse(response.data.choices[0].message.content);
+      parsedData = JSON.parse(cleansedResponse);
     } catch (error) {
       console.error("Error parsing JSON: ", error);
       return;
