@@ -11,13 +11,13 @@ export default function TextAreaInput(props) {
           name={name}
           value={value}
           onChange={handleInputChange}
-          maxLength={200}
+          maxLength={500}
         />
       </div>
       <div className="char-count">
-        <p className={{ value }.length === 200 ? "warning" : ""}>
-          {value.length}/200
-          {value.length === 200 && (
+        <p className={{ value }.length === 500 ? "warning" : ""}>
+          {value.length}/500
+          {value.length === 500 && (
             <span> Maximum number of characters reached</span>
           )}
         </p>
