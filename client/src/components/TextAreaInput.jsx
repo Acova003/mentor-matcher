@@ -18,7 +18,10 @@ export default function TextAreaInput(props) {
         <p className={{ value }.length === 500 ? "warning" : ""}>
           {value.length}/500
           {value.length === 500 && (
-            <span> Maximum number of characters reached</span>
+            <span className="warning">
+              {" "}
+              Maximum number of characters reached
+            </span>
           )}
         </p>
       </div>
