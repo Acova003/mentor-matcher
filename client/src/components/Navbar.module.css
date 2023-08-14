@@ -34,6 +34,18 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* logoImage */
+.logoImage {
+  width: auto;
+  height: 25%;
+}
+
+.logoLinkContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 /* ul  */
 .navMenu {
   display: flex;
@@ -49,6 +61,8 @@
   .hamburger {
     display: block;
     cursor: pointer;
+    z-index: 1001;
+    position: relative;
   }
 
   .bar {
@@ -85,6 +99,7 @@
     transition: 0.7s ease-in-out;
     background-color: aliceblue;
     padding: 10px;
+    z-index: 1000;
   }
 
   .navMenu.active {

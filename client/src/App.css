@@ -4,3 +4,20 @@
   padding: 2rem;
   text-align: center;
 }
+
+/* mentee greeting section */
+#mentee-greeting {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* warning */
+.warning {
+  color: red;
+}
