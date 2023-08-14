@@ -21,6 +21,6 @@ app.use(cookieParser());
 app.use("/api", indexRouter);
 app.use("/api/mentees", menteesRouter);
 app.use("/api/mentors", mentorsRouter);
-app.use("/api/generate-matches", matchRouter);
+app.use("/api/matches", matchRouter);
 
 module.exports = app;
