@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles from "./Navbar.module.css";
 import { Link } from "react-router-dom";
+import codeopLogo from "../assets/codeop-logo.jpeg";
 
 function Navbar() {
   // adding the states
@@ -20,10 +21,18 @@ function Navbar() {
     <div className="App">
       <header className="App-header">
         <nav className={`${styles.navbar}`}>
-          {/* logo */}
-          <Link to="/" className={`${styles.navLink}`}>
-            CodeOp Mentor Matcher
-          </Link>
+          {/* logo and link container */}
+          <div className={`${styles.logoLinkContainer}`}>
+            {/* logo */}
+            <figure className="image is-64x64">
+              <img className="is-rounded" src={codeopLogo} alt="codeop logo" />
+            </figure>
+
+            {/* link */}
+            <Link to="/" className={`${styles.navLink}`}>
+              CodeOp Mentor Matcher
+            </Link>
+          </div>
 
           <ul className={`${styles.navMenu} ${isActive ? styles.active : ""}`}>
             <li onClick={removeActive}>
