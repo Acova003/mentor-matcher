@@ -22,11 +22,23 @@ router.get("/", function (req, res, next) {
 /* POST add one mentor */
 router.post("/", async function (req, res, next) {
   try {
-    const { full_name, email, q1, q2, q3, q4, q5, q6, q7 } = req.body;
+    const {
+      first_name,
+      last_name,
+      email,
+      linkedin_url,
+      q1,
+      q2,
+      q3,
+      q4,
+      q5,
+      q6,
+      q7,
+    } = req.body;
 
     const query =
-      "INSERT INTO mentors (full_name, email, q1, q2, q3, q4, q5, q6, q7) " +
-      `VALUES ("${full_name}", "${email}", "${q1}", "${q2}", "${q3}", "${q4}", "${q5}", "${q6}", "${q7}")`;
+      "INSERT INTO mentors (first_name, last_name, email, linkedin_url, q1, q2, q3, q4, q5, q6, q7) " +
+      `VALUES ("${first_name}", "${last_name}", "${email}", "${linkedin_url}, "${q1}", "${q2}", "${q3}", "${q4}", "${q5}", "${q6}", "${q7}")`;
 
     const results = await db(query);
     res.status(200).send({ message: "Successfully added a mentor" });
@@ -53,11 +65,23 @@ router.get("/:id", async function (req, res, next) {
 /* PUT Updatementor by id */
 router.put("/:id", async function (req, res, next) {
   const id = req.params.id;
-  const { full_name, email, questionnaire_responses } = req.body;
+  const {
+    first_name,
+    last_name,
+    email,
+    linkedin_url,
+    q1,
+    q2,
+    q3,
+    q4,
+    q5,
+    q6,
+    q7,
+  } = req.body;
 
   try {
     const results = await db(
-      `UPDATE mentors SET full_name = "${full_name}", email = "${email}", questionnaire_responses = "${questionnaire_responses}" WHERE id = ${id};`
+      `UPDATE mentors SET first_name = "${first_name}", last_name = "${last_name}", email = "${email}", linkedin_url = "${linkedin_url}", q1 = "${q1}", q2 = "${q2}", q2 = "${q2}", q3 = "${q3}" , q4 = "${q4}", q5 = "${q5}", q6 = "${q6}", q7 = "${q7}" WHERE id = ${id};`
     );
     res.send(results.data);
   } catch (err) {
@@ -69,6 +93,7 @@ router.put("/:id", async function (req, res, next) {
 router.delete("/:id", async function (req, res, next) {
   const id = req.params.id;
   try {
+    await db(`DELETE FROM mentor_mentee WHERE mentor_id = ${id};`);
     const results = await db(`DELETE FROM mentors WHERE id = ${id};`);
     res.send(results.data);
   } catch (err) {
