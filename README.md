@@ -73,12 +73,6 @@ Mentor Matcher adopts a client-server architecture. The frontend communicates wi
   
 ## Installation and Setup
 
-### Contributing to the Project
-
-If you are considering contributing to the project:
-
-- Please start by creating a new fork of the repository.
-
 ### Setting Up the Project
 
 1. **Clone the Repository**: 
