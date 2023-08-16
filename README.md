@@ -121,7 +121,7 @@ Mentor Matcher adopts a client-server architecture. The frontend communicates wi
    In the Open AI developer portal, attain a auth key for ChatGPT-4. *Note*: You might have to go on a payment plan. Be sure that you have enough credits for API usage.
    
 6. **Configurations**:
-    In the root directory, create a file called ".env" to store your secrets. Adjust to your own settings.
+    In the root directory, create a file called ".env" to store your secrets. Adjust to your own settings for "DB_PASS" and "OPEN_AI_API_KEY".
 
       Add the following fields:
       ```
