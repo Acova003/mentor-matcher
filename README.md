@@ -147,5 +147,3 @@ Below is a brief overview of the available API endpoints:
 | `POST`   | `/api/matches`             | Generate ChatGPT response |
 | `GET`    | `/api/matches`             | Get all matches           |
 
-## Application Walkthrough
-
