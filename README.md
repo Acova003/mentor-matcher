@@ -123,14 +123,14 @@ Mentor Matcher adopts a client-server architecture. The frontend communicates wi
 6. **Configurations**:
     In the root directory, create a file called ".env" to store your secrets. Adjust to your own settings.
 
-Add the following fields:
-```
-  DB_HOST=127.0.0.1
-  DB_USER=root
-  DB_NAME=mentor_matcher
-  DB_PASS=your_password_here
-  OPEN_AI_API_KEY=your_openai_api_key_here
-```
+      Add the following fields:
+      ```
+        DB_HOST=127.0.0.1
+        DB_USER=root
+        DB_NAME=mentor_matcher
+        DB_PASS=your_password_here
+        OPEN_AI_API_KEY=your_openai_api_key_here
+      ```
 
 5. **Database migration**
    ```
