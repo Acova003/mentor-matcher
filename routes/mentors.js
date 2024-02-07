@@ -1,14 +1,28 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../model/helper");
+const { Client } = require("pg");
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // Required if using SSL to connect to Heroku Postgres
+  },
+});
+
+client
+  .connect()
+  .then(() => console.log("Connected to Heroku Postgres database"))
+  .catch((err) =>
+    console.error("Error connecting to Heroku Postgres database", err)
+  );
 
 const getAllMentors = async (req, res) => {
   try {
-    const results = await db("SELECT * FROM mentors;");
-    if (!results.data.length) {
+    const results = await client.query("SELECT * FROM mentors;");
+    if (!results.rows.length) {
       res.status(404).send({ msg: "There are no mentors. Please add one" });
     } else {
-      res.send(results.data);
+      res.send(results.rows);
     }
   } catch (err) {
     res.status(500).send(err);
@@ -38,9 +52,23 @@ router.post("/", async function (req, res, next) {
 
     const query =
       "INSERT INTO mentors (first_name, last_name, email, linkedin_url, q1, q2, q3, q4, q5, q6, q7) " +
-      `VALUES ("${first_name}", "${last_name}", "${email}", "${linkedin_url}", "${q1}", "${q2}", "${q3}", "${q4}", "${q5}", "${q6}", "${q7}")`;
+      "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)";
 
-    const results = await db(query);
+    const values = [
+      first_name,
+      last_name,
+      email,
+      linkedin_url,
+      q1,
+      q2,
+      q3,
+      q4,
+      q5,
+      q6,
+      q7,
+    ];
+
+    await client.query(query, values);
     res.status(200).send({ message: "Successfully added a mentor" });
   } catch (err) {
     res.status(500).send(err);
@@ -51,18 +79,20 @@ router.post("/", async function (req, res, next) {
 router.get("/:id", async function (req, res, next) {
   const id = req.params.id;
   try {
-    const results = await db(`SELECT * FROM mentors WHERE id = ${id};`);
-    if (!results.data.length) {
+    const results = await client.query("SELECT * FROM mentors WHERE id = $1;", [
+      id,
+    ]);
+    if (!results.rows.length) {
       res.status(404).send({ msg: "Mentor not found" });
     } else {
-      res.send(results.data);
+      res.send(results.rows);
     }
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
-/* PUT Updatementor by id */
+/* PUT Update mentor by id */
 router.put("/:id", async function (req, res, next) {
   const id = req.params.id;
   const {
@@ -80,10 +110,25 @@ router.put("/:id", async function (req, res, next) {
   } = req.body;
 
   try {
-    const results = await db(
-      `UPDATE mentors SET first_name = "${first_name}", last_name = "${last_name}", email = "${email}", linkedin_url = "${linkedin_url}", q1 = "${q1}", q2 = "${q2}", q2 = "${q2}", q3 = "${q3}" , q4 = "${q4}", q5 = "${q5}", q6 = "${q6}", q7 = "${q7}" WHERE id = ${id};`
-    );
-    res.send(results.data);
+    const query =
+      "UPDATE mentors SET first_name = $1, last_name = $2, email = $3, linkedin_url = $4, q1 = $5, q2 = $6, q2 = $6, q3 = $7 , q4 = $8, q5 = $9, q6 = $10, q7 = $11 WHERE id = $12;";
+    const values = [
+      first_name,
+      last_name,
+      email,
+      linkedin_url,
+      q1,
+      q2,
+      q3,
+      q4,
+      q5,
+      q6,
+      q7,
+      id,
+    ];
+
+    await client.query(query, values);
+    res.send("Mentor updated successfully");
   } catch (err) {
     res.status(500).send(err);
   }
@@ -92,11 +137,9 @@ router.put("/:id", async function (req, res, next) {
 /* DELETE mentor by id */
 router.delete("/:id", async function (req, res, next) {
   const id = req.params.id;
-  console.log(id);
   try {
-    const results = await db(`DELETE FROM mentors WHERE id = ${id};`);
-
-    res.send(results.data);
+    await client.query("DELETE FROM mentors WHERE id = $1;", [id]);
+    res.send("Mentor deleted successfully");
   } catch (err) {
     res.status(500).send(err);
   }

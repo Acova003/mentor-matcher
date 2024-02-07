@@ -1,17 +1,25 @@
 var express = require("express");
 var router = express.Router();
-const db = require("../model/helper");
-const { Configuration, OpenAIApi } = require("openai");
-const configuration = new Configuration({
-  apiKey: process.env.OPEN_AI_API_KEY,
+const { Client } = require("pg");
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // Required if using SSL to connect to Heroku Postgres
+  },
 });
 
-const openai = new OpenAIApi(configuration);
+client
+  .connect()
+  .then(() => console.log("Connected to Heroku Postgres database"))
+  .catch((err) =>
+    console.error("Error connecting to Heroku Postgres database", err)
+  );
 
 // get all matches
 router.get("/", async function (req, res, next) {
   try {
-    const matchedResults = await db(`
+    const matchedResults = await client.query(`
     SELECT 
         mentor_mentee.id, 
         mentor_id, 
@@ -30,14 +38,14 @@ router.get("/", async function (req, res, next) {
         mentees ON mentor_mentee.mentee_id = mentees.id;
 `);
 
-    const unmatchedMentors = await db(
+    const unmatchedMentors = await client.query(
       "SELECT id, first_name, last_name FROM mentors WHERE id NOT IN (SELECT mentor_id FROM mentor_mentee);"
     );
 
     // Create a combined response
     const combinedResults = {
-      matches: matchedResults.data,
-      unmatchedMentors: unmatchedMentors.data,
+      matches: matchedResults.rows,
+      unmatchedMentors: unmatchedMentors.rows,
     };
 
     if (
@@ -59,7 +67,7 @@ router.get("/", async function (req, res, next) {
 // remove all matches data from database
 router.delete("/clear-matches", async function (req, res, next) {
   try {
-    await db("DELETE FROM mentor_mentee;");
+    await client.query("DELETE FROM mentor_mentee;");
     res.send({ msg: "All matches have been deleted." });
   } catch (err) {
     console.error(err);
@@ -71,16 +79,17 @@ router.delete("/clear-matches", async function (req, res, next) {
 router.post("/", async function (req, res, next) {
   try {
     // First, delete previous matches from the database
-    // await db("DELETE FROM mentor_mentee;");
+    await client.query("DELETE FROM mentor_mentee;");
 
     console.log("getting mentor responses");
 
     const mentorResponses = await getQuestionnaireResponses("mentors");
-    // console.log(mentorResponses);
+    console.log("mentorResponses", mentorResponses);
 
     console.log("getting mentee responses");
     const menteeResponses = await getQuestionnaireResponses("mentees");
-    // console.log(menteeResponses);
+    console.log("menteeResponses", menteeResponses);
+
     console.log("calling generateMatches function");
 
     const matchResults = await generateMatches(
@@ -88,13 +97,11 @@ router.post("/", async function (req, res, next) {
       menteeResponses
     );
 
-    console.log(`match results: ${matchResults}`);
+    console.log("matchResults", matchResults);
 
     console.log("deleting previous matches");
 
     // insert match results into database mentor_mentee table
-
-    console.log("for loop of match results");
     for (let match of matchResults.matches) {
       const {
         mentor_id,
@@ -105,10 +112,9 @@ router.post("/", async function (req, res, next) {
 
       const query =
         "INSERT INTO mentor_mentee (mentor_id, mentee_id, compatibility_score, compatibility_description) " +
-        `VALUES ("${mentor_id}", "${mentee_id}", "${compatibility_score}", "${compatibility_description}");`;
+        `VALUES ('${mentor_id}', '${mentee_id}', '${compatibility_score}', '${compatibility_description}');`;
 
-      console.log("inserting new matches to db");
-      await db(query);
+      await client.query(query);
     }
 
     console.log("sending match results");
@@ -123,11 +129,11 @@ router.post("/", async function (req, res, next) {
 
 const getQuestionnaireResponses = async (tableName) => {
   try {
-    const responses = await db(
+    const responses = await client.query(
       `SELECT id, first_name, q1, q2, q3, q4, q5, q6, q7 FROM ${tableName};`
     );
 
-    return responses.data;
+    return responses.rows;
   } catch (error) {
     console.error(
       `generateQuestionnaireResponses error for ${tableName}: `,
