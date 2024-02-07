@@ -2,18 +2,27 @@
 
 ## Table of Contents
 
-- [System Overview](#system-overview)
-- [System Components](#system-components)
-  - [Frontend](#frontend)
-  - [Backend](#backend)
-  - [Database](#database)
-  - [External API Usage](#external-api-usage)
-- [System Architecture](#system-architecture)
-- [System Features](#system-features)
-- [Installation and Setup](#installation-and-setup)
-- [Getting Started](#getting-started)
-- [Internal API Documentation](#internal-api-documentation)
-- [Application Walkthrough](#application-walkthrough)
+- [Mentor Matcher](#mentor-matcher)
+  - [Table of Contents](#table-of-contents)
+  - [System Overview](#system-overview)
+  - [System Components](#system-components)
+    - [Frontend](#frontend)
+    - [Backend](#backend)
+    - [Database](#database)
+    - [External API Usage](#external-api-usage)
+      - [Open AI API](#open-ai-api)
+  - [System Architecture](#system-architecture)
+  - [System Features](#system-features)
+    - [AI Powered Matching](#ai-powered-matching)
+    - [Responsive User Interface](#responsive-user-interface)
+    - [Form-driven Data Collection](#form-driven-data-collection)
+    - [Backend Operations](#backend-operations)
+    - [Integrated Database System](#integrated-database-system)
+  - [Installation and Setup](#installation-and-setup)
+    - [Setting Up the Project](#setting-up-the-project)
+  - [Getting Started](#getting-started)
+  - [Internal API Documentation](#internal-api-documentation)
+  - [Application Walkthrough](#application-walkthrough)
 
 ## System Overview
 
@@ -44,9 +53,7 @@ We integrate ChatGPT from OpenAI to refine the mentor-mentee matching process. T
 Mentor Matcher adopts a client-server architecture. The frontend communicates with the backend to handle data in the database, with ChatGPT central to the matching procedure.
 
 - **Presentation Layer**: Developed using ReactJS, it guarantees a top-tier user experience. Additionally, there's an administrative authentication mechanism ensuring secure access.
-  
 - **Application Layer**: Backend services in Node.js process user requests and handle database communication, while strict validation methods ensure data consistency.
-  
 - **Data Layer**: MySQL efficiently handles data storage, with a well-structured database schema representing all relevant entities.
 
 ## System Features
@@ -70,69 +77,70 @@ Mentor Matcher adopts a client-server architecture. The frontend communicates wi
 ### Integrated Database System
 
 - MySQL is employed for data storage, retrieval, and management of user profiles and AI-inferred match information.
-  
+
 ## Installation and Setup
 
 ### Setting Up the Project
 
-1. **Clone the Repository**: 
+1. **Clone the Repository**:
 
-    Use the following command to clone the repository:
+   Use the following command to clone the repository:
 
-    ```
-    git clone https://github.com/Acova003/mentor-matcher.git
-    cd mentor-matcher
-    ```
+   ```
+   git clone https://github.com/Acova003/mentor-matcher.git
+   cd mentor-matcher
+   ```
 
 2. **Running the Backend**:
 
-    First, you'll need to install the backend dependencies:
+   First, you'll need to install the backend dependencies:
 
-    ```
-    npm install
-    ```
+   ```
+   npm install
+   ```
 
-    After the installation is complete, you can run the backend:
+   After the installation is complete, you can run the backend:
 
-    ```
-    npm run start
-    ```
+   ```
+   npm run start
+   ```
 
 3. **Running the Frontend**:
 
-    Open a new terminal and navigate to the frontend directory:
+   Open a new terminal and navigate to the frontend directory:
 
-    ```
-    cd client/
-    ```
+   ```
+   cd client/
+   ```
 
-    Install the frontend dependencies:
+   Install the frontend dependencies:
 
-    ```
-    npm install
-    ```
+   ```
+   npm install
+   ```
 
-    Once the installation is complete, start the frontend application:
+   Once the installation is complete, start the frontend application:
 
-    ```
-    npm run dev
-    ```
+   ```
+   npm run dev
+   ```
+
 4. **Get ChatGPT Auth key**
-   In the Open AI developer portal, attain a auth key for ChatGPT-4. *Note*: You might have to go on a payment plan. Be sure that you have enough credits for API usage.
-   
-6. **Configurations**:
-    In the root directory, create a file called ".env" to store your secrets. Adjust to your own settings for "DB_PASS" and "OPEN_AI_API_KEY".
+   In the Open AI developer portal, attain a auth key for ChatGPT-4. _Note_: You might have to go on a payment plan. Be sure that you have enough credits for API usage.
+5. **Configurations**:
+   In the root directory, create a file called ".env" to store your secrets. Adjust to your own settings for "DB_PASS" and "OPEN_AI_API_KEY".
 
-      Add the following fields:
-      ```
-        DB_HOST=127.0.0.1
-        DB_USER=root
-        DB_NAME=mentor_matcher
-        DB_PASS=your_password_here
-        OPEN_AI_API_KEY=your_openai_api_key_here
-      ```
+   Add the following fields:
 
-5. **Database migration**
+   ```
+     DB_HOST=127.0.0.1
+     DB_USER=root
+     DB_NAME=mentor_matcher
+     DB_PASS=your_password_here
+     OPEN_AI_API_KEY=your_openai_api_key_here
+   ```
+
+6. **Database migration**
    ```
    npm run migrate
    ```
@@ -160,3 +168,4 @@ Below is a brief overview of the available API endpoints:
 | `POST`   | `/api/matches`             | Generate ChatGPT response |
 | `GET`    | `/api/matches`             | Get all matches           |
 
+## Application Walkthrough
