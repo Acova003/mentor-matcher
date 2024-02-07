@@ -1,10 +1,16 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const path = require("path");
+const app = express();
 
-/* GET home page. */
-router.get("/", function (req, res, next) {
-  res.send({ title: "Express" });
+// Serve static files from the build directory
+app.use(express.static(path.join(__dirname, "client", "build")));
+
+// Serve the index.jsx file as the homepage
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "build", "index.jsx"));
 });
 
-
-module.exports = router;
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

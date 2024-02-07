@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import Navbar from "./components/Navbar.jsx";
+import Home from "./pages/Home";
 import Mentor from "./pages/Mentor";
 import Mentee from "./pages/Mentee";
 import Admin from "./pages/Admin";
@@ -13,6 +14,7 @@ function App() {
         <Navbar />
 
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/mentor" element={<Mentor />} />
           <Route path="/mentee" element={<Mentee />} />
           <Route path="/admin" element={<Admin />} />
